@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Vị Trí Công Việc</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Include Bootstrap Icons for the home icon -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .container {
+            margin-top: 20px;
+        }
+        .modal-header {
+            background-color: #343a40;
+            color: #fff;
+        }
+        .modal-footer .btn {
+            border-radius: 0;
+        }
+        .btn-primary, .btn-secondary {
+            border-radius: 0;
+        }
+        .table th, .table td {
+            text-align: center;
+        }
+        .table th {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="mb-4">Quản Lý Vị Trí Công Việc</h1>
+
+
+    <a href="#" th:href="@{/loginPage}" class="btn btn-outline-primary mb-3">
+        <i class="bi bi-house-door"></i> Quay lại trang chủ
+    </a>
+
+
+    <div class="mb-4">
+        <div class="form-group col-md-4 mr-5">
+            <input type="text" class="form-control" id="search"
+                   placeholder="Mã VTCV, Tên VTCV">
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">
+        Thêm Vị Trí Công Việc
+    </button>
+
+    <table id="jobPositionTable" class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Mã Vị Trí</th>
+            <th>Tên Vị Trí</th>
+            <th>Level</th>
+            <th>Hành Động</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+
+
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addJobPositionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addJobPositionModalLabel">Thêm Vị Trí Công Việc</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="jobPositionForm">
+
+                        <div class="mb-3">
+                            <label for="jobPositionName" class="form-label">Tên Vị Trí</label>
+                            <input type="text" class="form-control" id="jobPositionName" name="tenViTri" >
+                        </div>
+                        <div class="mb-3">
+                            <label for="jobPositionLevel" class="form-label">Level</label>
+                            <select class="form-select" id="jobPositionLevel" name="level" >
+                                <option value="">Chọn Level</option>
+                                <option value="Inter">Inter</option>
+                                <option value="Fresher">Fresher</option>
+                                <option value="Junior">Junior</option>
+                                <option value="Mid">Mid</option>
+                                <option value="Senior">Senior</option>
+                                <option value="Leader">Leader</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Director">Director</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Thêm công việc</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="saveJobPositionButton">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="jobPositionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="jobEditPositionModalLabel">Sửa Vị Trí Công Việc</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <div class="mb-3">
+                            <input type="hidden" class="form-control" id="jobPositionId" name="viTriId" >
+                        </div>
+                        <div class="mb-3">
+                            <label for="jobEditPositionCode" class="form-label">Mã Vị Trí</label>
+                            <input type="text" class="form-control" id="jobEditPositionCode" name="maViTri" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="jobEditPositionName" class="form-label">Tên Vị Trí</label>
+                            <input type="text" class="form-control" id="jobEditPositionName" name="tenViTri" >
+                        </div>
+                        <div class="mb-3">
+                            <label for="jobEditPositionLevel" class="form-label">Level</label>
+                            <select class="form-select" id="jobEditPositionLevel" name="level" >
+                                <option value="">Chọn Level</option>
+                                <option value="Inter">Inter</option>
+                                <option value="Fresher">Fresher</option>
+                                <option value="Junior">Junior</option>
+                                <option value="Mid">Mid</option>
+                                <option value="Senior">Senior</option>
+                                <option value="Leader">Leader</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Director">Director</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Cập nhật</button>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="saveEditJobPositionButton">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination" id="pagination">
+
+        </ul>
+    </nav>
+</div>
+
+<script>
+
+
+    $(document).on('click', '#jobPositionFormss', function() {
+        var addModal = new bootstrap.Modal(document.getElementById('addModal'));
+        addModal.show();
+    });
+
+
+    function generateRandomCode(length) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * chars.length);
+            result += chars[randomIndex];
+        }
+        return result;
+    }
+
+
+    $('#jobPositionForm').on('submit', function (e) {
+        e.preventDefault();
+
+
+        // Lấy giá trị từ các trường trong form
+        var tenViTri = $('#jobPositionName').val();
+        var level = $('#jobPositionLevel').val();
+
+
+        if (!tenViTri) {
+            Swal.fire('Lỗi', 'Vui lòng nhập tên vị trí công việc.', 'error');
+            return;
+        }
+
+        if (!level) {
+            Swal.fire('Lỗi', 'Vui lòng chọn cấp bậc của vị trí công việc.', 'error');
+            return;
+        }
+
+
+        var randomCode = generateRandomCode(5); // Tạo 5 ký tự ngẫu nhiên
+        var maViTri = 'VTCV' + randomCode; // Kết hợp 'VTCV' với mã ngẫu nhiên
+
+        var formData = {
+            maViTri: maViTri,
+            tenViTri: $('#jobPositionName').val(),
+            level: $('#jobPositionLevel').val()
+
+        };
+
+        $.ajax({
+            url: 'http://localhost:8080/vi-tri-cong-viec',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function(response) {
+                Swal.fire(
+                    'Thêm mới!',
+                    'Dữ liệu đã được thêm thành công.',
+                    'success'
+                );
+
+                fetchDataAndRenderTable();
+            },
+            error: function(xhr, status, error) {
+                var errorMessage = xhr.responseJSON ? xhr.responseJSON.message : xhr.responseText;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể thêm công việc: ' + errorMessage
+                });
+            }
+        });
+    });
+
+
+
+    $(document).on('click', '.edit-button', function() {
+        var viTriCongViecId = $(this).data('id');
+        $.ajax({
+            url: 'http://localhost:8080/vi-tri-cong-viec/' + viTriCongViecId,
+            method: 'GET',
+            success: function(data) {
+                $('#jobPositionId').val(data.viTriId);
+                $('#jobEditPositionCode').val(data.maViTri);
+                $('#jobEditPositionName').val(data.tenViTri);
+                $('#jobEditPositionLevel').val(data.level);
+
+
+                var editModal = new bootstrap.Modal(document.getElementById('editModal'));
+                editModal.show();
+
+            },
+            error: function(xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể lấy thông tin phòng ban: ' + xhr.responseText
+                });
+            }
+        });
+    });
+
+
+    // Xử lý submit form edit
+    $('#editForm').on('submit', function (e) {
+        e.preventDefault();
+
+
+
+        var tenViTri = $('#jobEditPositionName').val();
+        var level = $('#jobEditPositionLevel').val();
+
+
+
+        if (!tenViTri) {
+            Swal.fire('Lỗi', 'Vui lòng nhập tên vị trí công việc.', 'error');
+            return;
+        }
+
+        if (!level) {
+            Swal.fire('Lỗi', 'Vui lòng chọn cấp bậc của vị trí công việc.', 'error');
+            return;
+        }
+
+        var formData = {
+            viTriId: $('#jobPositionId').val(), // Kiểm tra giá trị của phongBanId
+            maViTri: $('#jobEditPositionCode').val(),
+            tenViTri: $('#jobEditPositionName').val(),
+            level: $('#jobEditPositionLevel').val()
+        };
+
+        $.ajax({
+            url: 'http://localhost:8080/vi-tri-cong-viec/' + formData.viTriId,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function(response) {
+                Swal.fire(
+                    'Update!',
+                    'Dữ liệu đã được Update thành công.',
+                    'success'
+                );
+                fetchDataAndRenderTable();
+
+            },
+            error: function(xhr, status, error) {
+                var errorMessage = xhr.responseJSON ? xhr.responseJSON.message : xhr.responseText;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể cập nhật thông tin công  việc: ' + errorMessage
+                });
+            }
+
+        });
+    });
+
+    //Delete
+    $(document).ready(function () {
+
+        $(document).on('click', '.delete-button', function () {
+            // Lấy ID của phần tử cần xóa
+            const id = $(this).data('id');
+
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Bạn không thể phục hồi dữ liệu sau khi xóa!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Có, xóa!',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: `http://localhost:8080/vi-tri-cong-viec/${id}`,
+                        type: 'DELETE',
+                        success: function (result) {
+                            // Hiển thị thông báo thành công
+                            Swal.fire(
+                                'Đã xóa!',
+                                'Dữ liệu đã được xóa thành công.',
+                                'success'
+                            );
+
+                            fetchDataAndRenderTable();
+                        },
+                        error: function (xhr, status, error) {
+                            // Hiển thị thông báo lỗi
+                            Swal.fire(
+                                'Lỗi!',
+                                'Có lỗi xảy ra khi xóa dữ liệu: ' + xhr.responseText,
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+
+
+    let currentSearchMa = null;
+    let currentSearchName = null;
+    let currentSearchLevel = null;
+
+
+    function fetchDataAndRenderTable(page = 0, size = 5) {
+        let apiURL = `/vi-tri-cong-viec/hien-thi?page=${page}&size=${size}`;
+
+        if (currentSearchMa) {
+            apiURL += `&maViTri=${encodeURIComponent(currentSearchMa)}`;
+        }
+        if (currentSearchName) {
+            apiURL += `&tenViTri=${encodeURIComponent(currentSearchName)}`;
+        }
+
+        if (currentSearchLevel) {
+            apiURL += `&level=${encodeURIComponent(currentSearchLevel)}`;
+        }
+
+
+        fetch(apiURL)
+            .then(response => response.json())
+            .then(data => {
+                renderTable(data, page, size);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    function searchInvoices(query) {
+        query = query.trim();
+
+        if (query.startsWith('VT')) {
+            currentSearchMa = query;
+            currentSearchName = null;
+            currentSearchLevel=null;
+        }
+        else {
+            currentSearchName = query;
+            currentSearchMa = null;
+
+        }
+
+        fetchDataAndRenderTable();
+    }
+
+
+    document.getElementById('search').addEventListener('input', function () {
+        const searchValue = this.value;
+        searchInvoices(searchValue);
+    });
+
+
+    function renderTable(data, page, size) {
+        const tableBody = document.querySelector('#jobPositionTable tbody');
+        const pagination = document.querySelector('#pagination');
+
+        tableBody.innerHTML = '';
+
+        data.content.forEach(jobs => {
+            const row = `<tr>
+                <td>${jobs.maViTri}</td>
+                <td>${jobs.tenViTri}</td>
+                <td>${jobs.level}</td>
+                <td>
+
+
+                     <button type="button" class="btn btn-warning btn-sm edit-button"
+                            data-bs-toggle="modal" data-bs-target="#editModal"
+                            data-id="${jobs.viTriId}">
+                        Sửa
+                    </button>
+
+
+
+                    <button type="button" class="btn btn-danger btn-sm delete-button" data-id="${jobs.viTriId}">
+                        Xóa
+                    </button>
+                </td>
+            </tr>`;
+            tableBody.insertAdjacentHTML('beforeend', row);
+        });
+
+
+        pagination.innerHTML = '';
+        for (let i = 0; i < data.totalPages; i++) {
+            const pageItem = `<li class="page-item ${i === page ? 'active' : ''}">
+                <a class="page-link" href="#" data-page="${i}">${i + 1}</a>
+            </li>`;
+            pagination.insertAdjacentHTML('beforeend', pageItem);
+        }
+
+        document.querySelectorAll('.page-link').forEach(link => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                const page = parseInt(this.getAttribute('data-page'));
+                fetchDataAndRenderTable(page);
+            });
+        });
+    }
+
+    fetchDataAndRenderTable();
+
+</script>
+</body>
+</html>

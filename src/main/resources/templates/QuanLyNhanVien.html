@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Nhân Viên</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Include Bootstrap Icons for the home icon -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        .container {
+            margin-top: 20px;
+        }
+
+        .modal-header {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        .modal-footer .btn {
+            border-radius: 0;
+        }
+
+        .btn-primary, .btn-secondary {
+            border-radius: 0;
+        }
+
+        .table th, .table td {
+            text-align: center;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="mb-4">Quản Lý Nhân Viên</h1>
+
+    <a href="#" th:href="@{/loginPage}" class="btn btn-outline-primary mb-3">
+        <i class="bi bi-house-door"></i> Quay lại trang chủ
+    </a>
+
+    <div class="mb-4">
+        <div class="form-group col-md-4 mr-5">
+            <input type="text" class="form-control" id="search"
+                   placeholder="Mã NV, Tên NV, Email">
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary mb-3" id="addEmployeeButton" data-bs-toggle="modal" data-bs-target="#employeeModal">
+        Thêm Nhân Viên
+    </button>
+
+    <table id="employeeTable" class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Mã Nhân Viên</th>
+            <th>Tên Nhân Viên</th>
+            <th>Email</th>
+            <th>Điện Thoại</th>
+            <th>Vị Trí</th>
+            <th>Vai Trò</th>
+            <th>Hành Động</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+
+    <div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="employeeModalLabel">Thêm Nhân Viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <form id="addForm">
+                        <input type="hidden" id="addNhanVienId" name="nhanVienId">
+
+                        <div class="mb-3">
+                            <label for="addTenNhanVien" class="form-label">Tên nhân viên</label>
+                            <input type="text" class="form-control" id="addTenNhanVien" name="tenNhanVien" >
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="addEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="addEmail" name="email" >
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="addSdt" class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" id="addSdt" name="sdt" >
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label for="addViTriCongViec" class="form-label">Vị trí công việc</label>
+                            <select class="form-select" id="addViTriCongViec" name="idViTriCongViec" >
+                                <option value="">Chọn vị trí công việc</option>
+                            </select>
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label for="addNhanVienQuanLy" class="form-label">Nhân viên quản lý</label>
+                            <select class="form-select" id="addNhanVienQuanLy" name="nhanVienIdNhanVien">
+                                <option value="">Chọn nhân viên quản lý</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="addAccount" class="form-label">Account</label>
+                            <select class="form-select" id="addAccount" name="maAccount">
+                                <option value="">Chọn Account</option>
+                            </select>
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label for="addAuthorityRoles" class="form-label">Vai trò quyền hạn</label>
+                            <select class="form-select" id="addAuthorityRoles" name="idRoles" >
+                                <option value="">Chọn vai trò</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Thêm Nhân Viên</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="myModalEdit" tabindex="-1" aria-labelledby="myModalEditLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalEditLabel">Chỉnh sửa thông tin nhân viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form chỉnh sửa nhân viên -->
+                    <form id="editForm">
+                        <input type="hidden" id="editNhanVienId" name="nhanVienId">
+
+                        <div class="mb-3">
+                            <label for="editMaNhanVien" class="form-label">Mã nhân viên</label>
+                            <input type="text" class="form-control" id="editMaNhanVien" name="maNhanVien" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editTenNhanVien" class="form-label">Tên nhân viên</label>
+                            <input type="text" class="form-control" id="editTenNhanVien" name="tenNhanVien" >
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editEmail" name="email" >
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editSdt" class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" id="editSdt" name="sdt" >
+                        </div>
+
+                        <!-- Vị trí công việc -->
+                        <div class="mb-3">
+                            <label for="editViTriCongViec" class="form-label">Vị trí công việc</label>
+                            <select class="form-select" id="editViTriCongViec" name="idViTriCongViec" >
+                                <option value="">Chọn vị trí công việc</option>
+                            </select>
+                        </div>
+
+                        <!-- Nhân viên quản lý -->
+                        <div class="mb-3">
+                            <label for="editNhanVienQuanLy" class="form-label">Nhân viên quản lý</label>
+                            <select class="form-select" id="editNhanVienQuanLy" name="nhanVienIdNhanVien" >
+                                <option value="">Chọn nhân viên quản lý</option>
+                            </select>
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label for="editAccount" class="form-label">Account</label>
+                            <select class="form-select" id="editAccount" name="maAccount" >
+                                <option value="">Chọn Account</option>
+                            </select>
+                        </div>
+
+                        <!-- Vai trò -->
+                        <div class="mb-3">
+                            <label for="editAuthorityRoles" class="form-label">Vai trò quyền hạn</label>
+                            <select class="form-select" id="editAuthorityRoles" name="idRoles" >
+                                <option value="">Chọn vai trò</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination" id="pagination">
+
+        </ul>
+    </nav>
+</div>
+
+
+<script>
+
+
+    $(document).on('click', '#addEmployeeButton', function() {
+
+        loadViTriCongViecs();
+        loadNhanVienQuanLys();
+        loadRoless();
+        loadAccounts();
+
+        var addModal = new bootstrap.Modal(document.getElementById('employeeModal'));
+        addModal.show();
+    });
+
+
+    function generateRandomCode(length) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * chars.length);
+            result += chars[randomIndex];
+        }
+        return result;
+    }
+
+
+    $('#addForm').on('submit', function (e) {
+        e.preventDefault();
+
+
+        var randomCode = generateRandomCode(5);
+        var maNhanVien = 'NV' + randomCode;
+
+
+        var formData = {
+            maNhanVien:maNhanVien,
+            tenNhanVien: $('#addTenNhanVien').val(),
+            email: $('#addEmail').val(),
+            sdt: $('#addSdt').val(),
+            idViTriCongViec: $('#addViTriCongViec').val(),
+            nhanVienQuanLyId: $('#addNhanVienQuanLy').val(),
+            idRoles: $('#addAuthorityRoles').val(),
+            maAccount: $('#addAccount').val()
+        };
+
+
+
+        if (!formData.tenNhanVien) {
+            Swal.fire('Lỗi', 'Vui lòng nhập tên nhân viên.', 'error');
+            return;
+        }
+
+        if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+            Swal.fire('Lỗi', 'Vui lòng nhập email hợp lệ.', 'error');
+            return;
+        }
+
+        if (!formData.sdt.match(/^\d{10}$/)) {
+            Swal.fire('Lỗi', 'Vui lòng nhập số điện thoại hợp lệ.', 'error');
+            return;
+        }
+
+        if (!formData.idViTriCongViec) {
+            Swal.fire('Lỗi', 'Vui lòng chọn vị trí công việc.', 'error');
+            return;
+        }
+
+        if (!formData.nhanVienQuanLyId) {
+            Swal.fire('Lỗi', 'Vui lòng chọn nhân viên quản lý.', 'error');
+            return;
+        }
+
+        if (!formData.idRoles) {
+            Swal.fire('Lỗi', 'Vui lòng chọn quyền hạn cho nhân viên.', 'error');
+            return;
+        }
+
+        if (!formData.maAccount) {
+            Swal.fire('Lỗi', 'Vui lòng nhập mã tài khoản.', 'error');
+            return;
+        }
+
+        $.ajax({
+            url: 'http://localhost:8080/nhan-vien',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function(response) {
+                Swal.fire(
+                    'Thêm mới!',
+                    'Dữ liệu đã được thêm thành công.',
+                    'success'
+                );
+
+                fetchDataAndRenderTable();
+            },
+            error: function(xhr, status, error) {
+                var errorMessage = xhr.responseJSON ? xhr.responseJSON.message : xhr.responseText;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể thêm nhân viên: ' + errorMessage
+                });
+            }
+        });
+    });
+
+
+
+    $(document).on('click', '.edit-button', function() {
+        var nhanVienId = $(this).data('id');
+
+        $.ajax({
+            url: 'http://localhost:8080/nhan-vien/' + nhanVienId,
+            method: 'GET',
+            success: function(data) {
+                $('#editNhanVienId').val(data.nhanVienId);
+                $('#editMaNhanVien').val(data.maNhanVien);
+                $('#editTenNhanVien').val(data.tenNhanVien);
+                $('#editEmail').val(data.email);
+                $('#editSdt').val(data.sdt);
+                // $('#editAccount').val(data.maAccount);
+
+                // Tải dữ liệu cho các hộp chọn
+                loadViTriCongViec(data.idViTriCongViec);
+                loadNhanVienQuanLy(data.nhanVienIdNhanVien);
+                loadRoles(data.idRoles);
+                loadAccount(data.maAccount)
+
+                var editModal = new bootstrap.Modal(document.getElementById('myModalEdit'));
+                editModal.show();
+
+
+            },
+            error: function(xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể lấy thông tin nhân viên: ' + xhr.responseText
+                });
+            }
+        });
+    });
+
+
+
+    $('#editForm').on('submit', function (e) {
+        e.preventDefault();
+        var formData = {
+            nhanVienId: $('#editNhanVienId').val(),
+            maNhanVien: $('#editMaNhanVien').val(),
+            tenNhanVien: $('#editTenNhanVien').val(),
+            email: $('#editEmail').val(),
+            sdt: $('#editSdt').val(),
+            idViTriCongViec: $('#editViTriCongViec').val(),
+            nhanVienQuanLyId: $('#editNhanVienQuanLy').val(),
+            idRoles: $('#editAuthorityRoles').val(),
+            maAccount: $('#editAccount').val()
+        };
+
+
+        if (!formData.nhanVienId) {
+            Swal.fire('Lỗi', 'ID nhân viên không được để trống.', 'error');
+            return;
+        }
+
+        if (!formData.tenNhanVien) {
+            Swal.fire('Lỗi', 'Tên nhân viên không được để trống.', 'error');
+            return;
+        }
+
+        if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+            Swal.fire('Lỗi', 'Email không hợp lệ.', 'error');
+            return;
+        }
+
+        if (!formData.sdt || !formData.sdt.match(/^\d{10}$/)) {
+            Swal.fire('Lỗi', 'Số điện thoại không hợp lệ.', 'error');
+            return;
+        }
+
+        if (!formData.idViTriCongViec) {
+            Swal.fire('Lỗi', 'Vui lòng chọn vị trí công việc.', 'error');
+            return;
+        }
+
+        if (!formData.nhanVienQuanLyId) {
+            Swal.fire('Lỗi', 'Vui lòng chọn nhân viên quản lý.', 'error');
+            return;
+        }
+
+        if (!formData.idRoles) {
+            Swal.fire('Lỗi', 'Vui lòng chọn quyền hạn cho nhân viên.', 'error');
+            return;
+        }
+
+        if (!formData.maAccount) {
+            Swal.fire('Lỗi', 'Mã tài khoản không được để trống.', 'error');
+            return;
+        }
+
+
+        $.ajax({
+            url: 'http://localhost:8080/nhan-vien/' + formData.nhanVienId,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function(response) {
+                Swal.fire(
+                    'Update!',
+                    'Dữ liệu đã được Update thành công.',
+                    'success'
+                );
+
+                // $('#myModalEdit').modal('hide');
+                fetchDataAndRenderTable();
+
+            },
+            error: function(xhr, status, error) {
+                var errorMessage = xhr.responseJSON ? xhr.responseJSON.message : xhr.responseText;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể cập nhật thông tin nhân viên: ' + errorMessage
+                });
+            }
+        });
+    });
+
+
+
+
+
+    function loadViTriCongViecs(selectedId) {
+        $.ajax({
+            url: 'http://localhost:8080/vi-tri-cong-viec/hien-thi2',
+            method: 'GET',
+            success: function (data) {
+                var viTriSelect = $('#addViTriCongViec');
+                viTriSelect.empty();
+                viTriSelect.append('<option value="">Chọn vị trí công việc</option>');
+
+                data.forEach(function (item) {
+                    var selected = item.viTriId === selectedId ? 'selected' : '';
+                    viTriSelect.append('<option value="' + item.viTriId + '" ' + selected + '>' + item.tenViTri + '</option>');
+                });
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể tải danh sách vị trí công việc: ' + xhr.responseText
+                });
+            }
+        });
+    }
+
+
+    function loadNhanVienQuanLys(selectedId) {
+        $.ajax({
+            url: 'http://localhost:8080/nhan-vien/hien-thi2',
+            method: 'GET',
+            success: function (data) {
+                var nhanVienSelect = $('#addNhanVienQuanLy');
+                nhanVienSelect.empty();
+                nhanVienSelect.append('<option value="">Chọn nhân viên quản lý</option>');
+                data.forEach(function (item) {
+                    var selected = item.nhanVienIdNhanVien === selectedId ? 'selected' : '';
+                    nhanVienSelect.append('<option value="' + item.nhanVienIdNhanVien + '" ' + selected + '>' + item.tenNhanVien + '</option>');
+                });
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể tải danh sách nhân viên quản lý.'
+                });
+            }
+        });
+    }
+
+
+    function loadAccounts(selectedId) {
+        $.ajax({
+            url: 'http://localhost:8080/account/hien-thi',
+            method: 'GET',
+            success: function (data) {
+                var viTriSelect = $('#addAccount');
+                viTriSelect.empty();
+                viTriSelect.append('<option value="">Chọn account</option>');
+
+                data.forEach(function (item) {
+                    var selected = item.ma === selectedId ? 'selected' : '';
+                    viTriSelect.append('<option value="' + item.ma + '" ' + selected + '>' + item.ma + '</option>');
+                });
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể tải danh sách vị trí công việc: ' + xhr.responseText
+                });
+            }
+        });
+    }
+
+
+    function loadRoless(selectedId) {
+        $.ajax({
+            url: 'http://localhost:8080/roles/hien-thi',
+            method: 'GET',
+            success: function (data) {
+                var roleSelect = $('#addAuthorityRoles');
+                roleSelect.empty();
+                roleSelect.append('<option value="">Chọn vai trò</option>');
+                data.forEach(function (item) {
+                    var selected = item.id === selectedId ? 'selected' : '';
+                    roleSelect.append('<option value="' + item.id + '" ' + selected + '>' + item.authority + '</option>');
+                });
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể tải danh sách vai trò.'
+                });
+            }
+        });
+    }
+
+
+    function loadViTriCongViec(selectedId) {
+        $.ajax({
+            url: 'http://localhost:8080/vi-tri-cong-viec/hien-thi2',
+            method: 'GET',
+            success: function (data) {
+                var viTriSelect = $('#editViTriCongViec');
+                viTriSelect.empty();
+                viTriSelect.append('<option value="">Chọn vị trí công việc</option>');
+
+                data.forEach(function (item) {
+                    var selected = item.viTriId === selectedId ? 'selected' : '';
+                    viTriSelect.append('<option value="' + item.viTriId + '" ' + selected + '>' + item.tenViTri + '</option>');
+                });
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể tải danh sách vị trí công việc: ' + xhr.responseText
+                });
+            }
+        });
+    }
+
+
+    function loadNhanVienQuanLy(selectedId) {
+        $.ajax({
+            url: 'http://localhost:8080/nhan-vien/hien-thi2',
+            method: 'GET',
+            success: function (data) {
+                var nhanVienSelect = $('#editNhanVienQuanLy');
+                nhanVienSelect.empty();
+                nhanVienSelect.append('<option value="">Chọn nhân viên quản lý</option>');
+                data.forEach(function (item) {
+                    var selected = item.nhanVienId === selectedId ? 'selected' : '';
+                    nhanVienSelect.append('<option value="' + item.nhanVienId + '" ' + selected + '>' + item.tenNhanVien + '</option>');
+                });
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể tải danh sách nhân viên quản lý.'
+                });
+            }
+        });
+    }
+
+
+    function loadAccount(selectedId) {
+        $.ajax({
+            url: 'http://localhost:8080/account/hien-thi',
+            method: 'GET',
+            success: function (data) {
+                var viTriSelect = $('#editAccount');
+                viTriSelect.empty();
+                viTriSelect.append('<option value="">Chọn account</option>');
+
+                data.forEach(function (item) {
+                    var selected = item.ma === selectedId ? 'selected' : '';
+                    viTriSelect.append('<option value="' + item.ma + '" ' + selected + '>' + item.ma + '</option>');
+                });
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể tải danh sách vị trí công việc: ' + xhr.responseText
+                });
+            }
+        });
+    }
+
+
+    function loadRoles(selectedId) {
+        $.ajax({
+            url: 'http://localhost:8080/roles/hien-thi',
+            method: 'GET',
+            success: function (data) {
+                var roleSelect = $('#editAuthorityRoles');
+                roleSelect.empty();
+                roleSelect.append('<option value="">Chọn vai trò</option>');
+                data.forEach(function (item) {
+                    var selected = item.id === selectedId ? 'selected' : '';
+                    roleSelect.append('<option value="' + item.id + '" ' + selected + '>' + item.authority + '</option>');
+                });
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể tải danh sách vai trò.'
+                });
+            }
+        });
+    }
+
+
+    //Delete
+    $(document).ready(function () {
+
+        $(document).on('click', '.delete-button', function () {
+
+            const id = $(this).data('id');
+
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Bạn không thể phục hồi dữ liệu sau khi xóa!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Có, xóa!',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: `http://localhost:8080/nhan-vien/${id}`,
+                        type: 'DELETE',
+                        success: function (result) {
+
+                            Swal.fire(
+                                'Đã xóa!',
+                                'Dữ liệu đã được xóa thành công.',
+                                'success'
+                            );
+
+                            fetchDataAndRenderTable();
+                        },
+                        error: function (xhr, status, error) {
+
+                            Swal.fire(
+                                'Lỗi!',
+                                'Có lỗi xảy ra khi xóa dữ liệu: ' + xhr.responseText,
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+
+
+    let currentSearchQuery = null;
+    let currentSearchName = null;
+    let currentSearchEmail = null;
+
+
+    function fetchDataAndRenderTable(page = 0, size = 5) {
+        let apiURL = `/nhan-vien/hien-thi?page=${page}&size=${size}`;
+
+        if (currentSearchQuery) {
+            apiURL += `&maNhanVien=${encodeURIComponent(currentSearchQuery)}`;
+        }
+        if (currentSearchName) {
+            apiURL += `&tenNhanVien=${encodeURIComponent(currentSearchName)}`;
+        }
+        if (currentSearchEmail) {
+            apiURL += `&email=${encodeURIComponent(currentSearchEmail)}`;
+        }
+
+        fetch(apiURL)
+            .then(response => response.json())
+            .then(data => {
+                renderTable(data, page, size);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    function searchInvoices(query) {
+        query = query.trim();
+
+        if (query.startsWith('NV')) {
+            currentSearchQuery = query;
+            currentSearchName = null;
+            currentSearchEmail = null;
+        } else if (query.includes('@')) {
+            currentSearchEmail = query;
+            currentSearchQuery = null;
+            currentSearchName = null;
+        } else {
+            currentSearchName = query;
+            currentSearchQuery = null;
+            currentSearchEmail = null;
+        }
+
+        fetchDataAndRenderTable();
+    }
+
+
+
+    document.getElementById('search').addEventListener('input', function () {
+        const searchValue = this.value;
+        searchInvoices(searchValue);
+    });
+
+
+    function renderTable(data, page, size) {
+        const tableBody = document.querySelector('#employeeTable tbody');
+        const pagination = document.querySelector('#pagination');
+
+        tableBody.innerHTML = '';
+
+        data.content.forEach(employee => {
+            const row = `<tr>
+                <td>${employee.maNhanVien}</td>
+                <td>${employee.tenNhanVien}</td>
+                <td>${employee.email}</td>
+                <td>${employee.sdt}</td>
+                <td>${employee.tenViTriCongViec}</td>
+                <td>${employee.authorityRoles}</td>
+                <td>
+
+
+                     <button type="button" class="btn btn-warning btn-sm edit-button"
+                            data-bs-toggle="modal" data-bs-target="#myModalEdit"
+                            data-id="${employee.nhanVienId}">
+                        Sửa
+                    </button>
+
+
+                    <button type="button" class="btn btn-danger btn-sm delete-button" data-id="${employee.nhanVienId}">
+                        Xóa
+                    </button>
+                </td>
+            </tr>`;
+            tableBody.insertAdjacentHTML('beforeend', row);
+        });
+
+
+        pagination.innerHTML = '';
+        for (let i = 0; i < data.totalPages; i++) {
+            const pageItem = `<li class="page-item ${i === page ? 'active' : ''}">
+                <a class="page-link" href="#" data-page="${i}">${i + 1}</a>
+            </li>`;
+            pagination.insertAdjacentHTML('beforeend', pageItem);
+        }
+
+
+        document.querySelectorAll('.page-link').forEach(link => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                const page = parseInt(this.getAttribute('data-page'));
+                fetchDataAndRenderTable(page);
+            });
+        });
+
+
+        document.querySelectorAll('.edit-button').forEach(button => {
+            button.addEventListener('click', function () {
+                const id = this.getAttribute('data-id');
+
+            });
+        });
+
+
+        document.querySelectorAll('.delete-button').forEach(button => {
+            button.addEventListener('click', function () {
+                const id = this.getAttribute('data-id');
+
+            });
+        });
+    }
+
+
+    fetchDataAndRenderTable();
+</script>
+</body>
+</html>
